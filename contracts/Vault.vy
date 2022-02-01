@@ -117,7 +117,12 @@ def maxDeposit() -> uint256:
 @view
 @internal
 def _previewDeposit(assetAmount: uint256) -> uint256:
-    return assetAmount * self.totalSupply / self.asset.balanceOf(self)
+    supply: uint256 = self.totalSupply
+    
+    if supply == 0: 
+        return 10**convert(DECIMALS, uint256)
+
+    return assetAmount * supply / self.asset.balanceOf(self)
 
 
 @view
@@ -146,12 +151,17 @@ def maxMint() -> uint256:
 @view
 @internal
 def _previewMint(sharesAmount: uint256) -> uint256:
+    supply: uint256 = self.totalSupply
+    
+    if supply == 0: 
+        return 10**convert(DECIMALS, uint256)
+
     numerator: uint256 = shareAmount * self.asset.balanceOf(self)
     
     if numerator == 0: 
         return 0
     
-    return ((numerator - 1) / self.totalSupply) + 1
+    return ((numerator - 1) / supply) + 1
 
 
 @view
@@ -179,8 +189,13 @@ def maxWithdraw() -> uint256:
 
 @view
 @internal
-def _previewWithdraw(sharesAmount: uint256) -> uint256:
-    numerator: uint256 = assetAmount * self.totalSupply
+def _previewWithdraw(assetAmount: uint256) -> uint256:        
+    supply: uint256 = self.totalSupply
+    
+    if supply == 0: 
+        return 10**convert(DECIMALS, uint256)
+
+    numerator: uint256 = assetAmount * supply
     
     if numerator == 0: 
         return 0
@@ -218,7 +233,12 @@ def maxRedeem() -> uint256:
 @view
 @internal
 def _previewRedeem(sharesAmount: uint256) -> uint256:
-    return shareAmount * self.asset.balanceOf(self) / self.totalSupply
+    supply: uint256 = self.totalSupply
+    
+    if supply == 0: 
+        return 10**convert(DECIMALS, uint256)
+
+    return shareAmount * self.asset.balanceOf(self) / supply
 
 
 @view
